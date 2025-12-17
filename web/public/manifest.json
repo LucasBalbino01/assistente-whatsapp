@@ -1,11 +1,11 @@
 {
   "name": "Assistente Financeiro",
-  "short_name": "Finan√ßas",
+  "short_name": "Finanáas",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
+  "background_color": "#2563eb",
   "theme_color": "#2563eb",
-  "orientation": "portrait",
+  "description": "Controle financeiro com WhatsApp",
   "icons": [
     {
       "src": "/icon-192.png",
