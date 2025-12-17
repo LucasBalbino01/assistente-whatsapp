@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Assistente Financeiro</title>
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#2563eb">
+
 <link rel="stylesheet" href="/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-  .grafico-container{max-width:400px;margin:auto}
-  table button{margin:0 4px}
-</style>
 </head>
 
 <body>
@@ -17,136 +17,188 @@
 
 <div class="container">
 
-<div class="card">
-  <button onclick="mostrar('gastos')">📊 Gastos</button>
-  <button onclick="mostrar('graficos')">📈 Gráficos</button>
-  <button onclick="mostrar('agenda')">🗓️ Agenda</button>
-  <button onclick="mostrar('cofrinho')">🏦 Cofrinho</button>
-  <button onclick="mostrar('contas')">💳 Contas</button>
+  <!-- MENU -->
+  <div class="card">
+    <button onclick="mostrar('gastos')">📊 Gastos</button>
+    <button onclick="mostrar('graficos')">📈 Gráficos</button>
+    <button onclick="mostrar('agenda')">🗓️ Agenda</button>
+    <button onclick="mostrar('cofrinho')">🏦 Cofrinho</button>
+    <button onclick="mostrar('contas')">💳 Contas</button>
+  </div>
+
+  <!-- GASTOS -->
+  <section id="gastos" class="card aba">
+    <h2>Gastos</h2>
+
+    <input id="descricao" placeholder="Descrição do gasto">
+    <input id="valor" type="number" placeholder="Valor">
+    <input id="categoria" placeholder="Categoria">
+    <button onclick="adicionar()">Adicionar</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Categoria</th>
+          <th>Descrição</th>
+          <th>Valor</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabela"></tbody>
+    </table>
+
+    <h3 id="total"></h3>
+  </section>
+
+  <!-- GRÁFICOS -->
+  <section id="graficos" class="card aba" style="display:none">
+    <h2>Gráfico por categoria</h2>
+    <div class="grafico-container">
+      <canvas id="pizza"></canvas>
+    </div>
+  </section>
+
+  <!-- AGENDA -->
+  <section id="agenda" class="card aba" style="display:none">
+    <h2>Agenda</h2>
+    <p>Em breve…</p>
+  </section>
+
+  <!-- COFRINHO -->
+  <section id="cofrinho" class="card aba" style="display:none">
+    <h2>Cofrinho</h2>
+    <p>Em breve…</p>
+  </section>
+
+  <!-- CONTAS -->
+  <section id="contas" class="card aba" style="display:none">
+    <h2>Contas a pagar</h2>
+    <p>Em breve…</p>
+  </section>
+
 </div>
 
-<section id="gastos" class="card aba">
-<h2>Gastos</h2>
-<input id="descricao" placeholder="Descrição">
-<input id="valor" type="number" placeholder="Valor">
-<input id="categoria" placeholder="Categoria">
-<button onclick="adicionarGasto()">Adicionar</button>
-
-<table>
-<thead>
-<tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ações</th></tr>
-</thead>
-<tbody id="tabela"></tbody>
-</table>
-
-<h3 id="total"></h3>
-</section>
-
-<section id="graficos" class="card aba" style="display:none">
-<h2>Gráfico por categoria</h2>
-<div class="grafico-container">
-<canvas id="graficoPizza"></canvas>
-</div>
-</section>
-
-<section id="agenda" class="card aba" style="display:none">
-<h2>Agenda</h2>
-<input id="textoLembrete" placeholder="Lembrete">
-<input type="date" id="dataLembrete">
-<input type="time" id="horaLembrete">
-<button onclick="addLembrete()">Salvar</button>
-
-<ul id="listaLembretes"></ul>
-</section>
-
-<section id="cofrinho" class="card aba" style="display:none">
-<h2>Cofrinho</h2>
-<p>Em breve…</p>
-</section>
-
-<section id="contas" class="card aba" style="display:none">
-<h2>Contas a pagar</h2>
-<p>Em breve…</p>
-</section>
-
-</div>
+<!-- BOTÃO MODO ESCURO -->
+<button class="toggle-dark" onclick="toggleDark()">🌙</button>
 
 <script>
 const usuario = location.pathname.split('/').pop();
 let grafico;
 
+/* NAVEGAÇÃO */
 function mostrar(id){
   document.querySelectorAll('.aba').forEach(a=>a.style.display='none');
   document.getElementById(id).style.display='block';
-  if(id==='graficos') carregarGrafico();
+  if(id==='graficos') graficoPizza();
 }
 
-function br(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+/* FORMATAÇÃO */
+function real(v){
+  return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+}
 
+/* CATEGORIAS */
+function renderCategoria(cat){
+  const c = cat.toLowerCase();
+  if(c.includes('casa')) return `<span class="categoria cat-casa">🏠 ${cat}</span>`;
+  if(c.includes('merc')) return `<span class="categoria cat-mercado">🛒 ${cat}</span>`;
+  if(c.includes('lazer')) return `<span class="categoria cat-lazer">🎮 ${cat}</span>`;
+  if(c.includes('uber')||c.includes('gas')) return `<span class="categoria cat-transporte">🚗 ${cat}</span>`;
+  if(c.includes('comida')||c.includes('aliment')) return `<span class="categoria cat-alimentacao">🍔 ${cat}</span>`;
+  return `<span class="categoria cat-outros">💸 ${cat}</span>`;
+}
+
+/* CARREGAR DADOS */
 function carregar(){
-fetch('/api/dados/'+usuario).then(r=>r.json()).then(d=>{
-let total=0,cat={};
-tabela.innerHTML='';
-d.movimentos.forEach(g=>{
-total+=g.valor;
-cat[g.categoria]=(cat[g.categoria]||0)+g.valor;
-tabela.innerHTML+=`<tr>
-<td>${g.data}</td><td>${g.categoria}</td>
-<td>${g.descricao}</td><td>${br(g.valor)}</td>
-<td>
-<button onclick="edit(${g.id},'${g.descricao}','${g.categoria}',${g.valor})">✏️</button>
-<button onclick="del(${g.id})">🗑️</button>
-</td></tr>`;
-});
-total.innerText='Total: '+br(total);
-});
+  fetch('/api/dados/'+usuario)
+  .then(r=>r.json())
+  .then(d=>{
+    let total=0;
+    tabela.innerHTML='';
+    d.movimentos.forEach(g=>{
+      total+=g.valor;
+      tabela.innerHTML+=`
+        <tr>
+          <td>${g.data}</td>
+          <td>${renderCategoria(g.categoria)}</td>
+          <td>${g.descricao}</td>
+          <td>${real(g.valor)}</td>
+          <td>
+            <button onclick="editar(${g.id},'${g.descricao}','${g.categoria}',${g.valor})">✏️</button>
+            <button onclick="excluir(${g.id})">🗑️</button>
+          </td>
+        </tr>`;
+    });
+    total.innerText='Total: '+real(total);
+  });
 }
 
-function adicionarGasto(){
-fetch('/api/gasto/'+usuario,{
-method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({descricao:descricao.value,valor:valor.value,categoria:categoria.value})
-}).then(carregar);
+/* CRUD */
+function adicionar(){
+  fetch('/api/gasto/'+usuario,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      descricao:descricao.value,
+      valor:valor.value,
+      categoria:categoria.value
+    })
+  }).then(carregar);
 }
 
-function del(id){fetch('/api/gasto/'+id,{method:'DELETE'}).then(carregar);}
-function edit(id,d,c,v){
-const nd=prompt('Descrição',d),nc=prompt('Categoria',c),nv=prompt('Valor',v);
-fetch('/api/gasto/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({descricao:nd,categoria:nc,valor:nv})}).then(carregar);
+function excluir(id){
+  fetch('/api/gasto/'+id,{method:'DELETE'}).then(carregar);
 }
 
-function carregarGrafico(){
-fetch('/api/dados/'+usuario).then(r=>r.json()).then(d=>{
-const cat={};
-d.movimentos.forEach(g=>cat[g.categoria]=(cat[g.categoria]||0)+g.valor);
-if(grafico)grafico.destroy();
-grafico=new Chart(graficoPizza,{type:'pie',
-data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]}});
-});
+function editar(id,d,c,v){
+  const nd=prompt('Descrição',d);
+  const nc=prompt('Categoria',c);
+  const nv=prompt('Valor',v);
+  fetch('/api/gasto/'+id,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({descricao:nd,categoria:nc,valor:nv})
+  }).then(carregar);
 }
 
-function addLembrete(){
-fetch('/api/lembrete/'+usuario,{
-method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({texto:textoLembrete.value,data:dataLembrete.value,hora:horaLembrete.value})
-}).then(loadLembretes);
+/* GRÁFICO */
+function graficoPizza(){
+  fetch('/api/dados/'+usuario)
+  .then(r=>r.json())
+  .then(d=>{
+    const cat={};
+    d.movimentos.forEach(g=>cat[g.categoria]=(cat[g.categoria]||0)+g.valor);
+    if(grafico)grafico.destroy();
+    grafico=new Chart(pizza,{
+      type:'pie',
+      data:{
+        labels:Object.keys(cat),
+        datasets:[{data:Object.values(cat)}]
+      }
+    });
+  });
 }
 
-function loadLembretes(){
-fetch('/api/lembretes/'+usuario).then(r=>r.json()).then(l=>{
-listaLembretes.innerHTML='';
-l.forEach(x=>{
-listaLembretes.innerHTML+=`<li>${x.texto} ${x.data} ${x.hora}
-<button onclick="delL(${x.id})">🗑️</button></li>`;
-});
-});
+/* MODO ESCURO */
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  const ativo=document.body.classList.contains('dark');
+  localStorage.setItem('modo-escuro',ativo?'1':'0');
+  document.querySelector('.toggle-dark').innerText=ativo?'☀️':'🌙';
 }
 
-function delL(id){fetch('/api/lembrete/'+id,{method:'DELETE'}).then(loadLembretes);}
+if(localStorage.getItem('modo-escuro')==='1'){
+  document.body.classList.add('dark');
+  document.querySelector('.toggle-dark').innerText='☀️';
+}
+
+/* SERVICE WORKER (PWA) */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 
 carregar();
-loadLembretes();
 </script>
 
 </body>
