@@ -1,0 +1,30 @@
+{
+  "usuarios": {
+    "25129971089618@lid": {
+      "movimentos": [
+        {
+          "tipo": "ganho",
+          "valor": 2000,
+          "categoria": null,
+          "descricao": "recebi 2000 de salário",
+          "data": "17/12/2025, 09:22:53"
+        },
+        {
+          "tipo": "despesa",
+          "valor": 300,
+          "categoria": "essencial",
+          "descricao": "gastei 300 reais aluguel essencial",
+          "data": "17/12/2025, 09:23:14"
+        },
+        {
+          "tipo": "despesa",
+          "valor": 80,
+          "categoria": "nao essencial",
+          "descricao": "gastei 80 reais em pizza",
+          "data": "17/12/2025, 09:23:31"
+        }
+      ]
+    }
+  },
+  "lembretes": []
+}

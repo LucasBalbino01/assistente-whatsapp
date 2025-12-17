@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Assistente Financeiro</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="navbar">
+    <h1>Assistente Financeiro</h1>
+</header>
+
+<main class="container">
+
+    <!-- CARDS -->
+    <section class="cards">
+        <div class="card card-entrada">
+            <span>Entradas</span>
+            <strong id="entradas">R$ 0</strong>
+        </div>
+        <div class="card card-saida">
+            <span>Saídas</span>
+            <strong id="saidas">R$ 0</strong>
+        </div>
+        <div class="card card-saldo">
+            <span>Saldo</span>
+            <strong id="saldo">R$ 0</strong>
+        </div>
+    </section>
+
+    <!-- GRÁFICOS -->
+    <section class="graficos">
+        <div class="grafico-box">
+            <h3>Despesas</h3>
+            <canvas id="pizza"></canvas>
+        </div>
+        <div class="grafico-box" style="margin-top:20px">
+            <h3>Entradas x Saídas por mês</h3>
+            <canvas id="mensal"></canvas>
+        </div>
+    </section>
+
+    <!-- AGENDA -->
+    <section class="agenda-box">
+        <h3>Agenda de Lembretes</h3>
+        <ul id="lista-lembretes" class="lista-lembretes"></ul>
+    </section>
+
+    <!-- FILTROS -->
+    <section class="filtros">
+        <select id="filtroMes">
+            <option value="">Todos os meses</option>
+        </select>
+
+        <select id="filtroTipo">
+            <option value="">Todos</option>
+            <option value="ganho">Ganhos</option>
+            <option value="despesa">Despesas</option>
+        </select>
+
+        <select id="filtroCategoria">
+            <option value="">Todas</option>
+            <option value="essencial">Essencial</option>
+            <option value="nao essencial">Não essencial</option>
+        </select>
+    </section>
+
+    <!-- TABELA -->
+    <section class="tabela-box">
+        <h3>Movimentações</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody id="tabela"></tbody>
+        </table>
+    </section>
+
+</main>
+
+<script>
+const usuario = window.location.pathname.split('/').pop();
+let todosMovimentos = [];
+
+fetch('/api/dados/' + usuario)
+    .then(r => r.json())
+    .then(dados => {
+
+        let entradas = 0;
+        let saidas = 0;
+        let essencial = 0;
+        let naoEssencial = 0;
+        const meses = {};
+
+        // AGENDA
+        const lista = document.getElementById('lista-lembretes');
+        lista.innerHTML = '';
+        dados.lembretes.forEach(l => {
+            const data = new Date(l.dataHora).toLocaleString();
+            lista.innerHTML += `
+                <li class="${l.enviado ? 'feito' : 'pendente'}">
+                    <span>${l.texto}</span>
+                    <small>${data}</small>
+                </li>
+            `;
+        });
+
+        // MOVIMENTOS
+        todosMovimentos = dados.movimentos;
+
+        dados.movimentos.forEach(m => {
+            const d = new Date(m.data);
+            const mes = `${d.getMonth()+1}/${d.getFullYear()}`;
+
+            if (!meses[mes]) meses[mes] = { entrada: 0, saida: 0 };
+
+            if (m.tipo === 'ganho') {
+                entradas += m.valor;
+                meses[mes].entrada += m.valor;
+            }
+
+            if (m.tipo === 'despesa') {
+                saidas += m.valor;
+                meses[mes].saida += m.valor;
+                if (m.categoria === 'essencial') essencial += m.valor;
+                else naoEssencial += m.valor;
+            }
+
+            if (![...document.getElementById('filtroMes').options].some(o => o.value === mes)) {
+                const opt = document.createElement('option');
+                opt.value = mes;
+                opt.textContent = mes;
+                document.getElementById('filtroMes').appendChild(opt);
+            }
+        });
+
+        atualizarTabela();
+
+        // CARDS
+        document.getElementById('entradas').innerText = `R$ ${entradas}`;
+        document.getElementById('saidas').innerText = `R$ ${saidas}`;
+        document.getElementById('saldo').innerText = `R$ ${entradas - saidas}`;
+
+        // GRÁFICOS
+        new Chart(document.getElementById('pizza'), {
+            type: 'pie',
+            data: {
+                labels: ['Essencial', 'Não essencial'],
+                datasets: [{
+                    data: [essencial, naoEssencial],
+                    backgroundColor: ['#10b981', '#f59e0b']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('mensal'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(meses),
+                datasets: [
+                    { label: 'Entradas', data: Object.values(meses).map(m => m.entrada), backgroundColor: '#10b981' },
+                    { label: 'Saídas', data: Object.values(meses).map(m => m.saida), backgroundColor: '#ef4444' }
+                ]
+            }
+        });
+    });
+
+function atualizarTabela() {
+    const mes = document.getElementById('filtroMes').value;
+    const tipo = document.getElementById('filtroTipo').value;
+    const categoria = document.getElementById('filtroCategoria').value;
+
+    const tabela = document.getElementById('tabela');
+    tabela.innerHTML = '';
+
+    todosMovimentos
+        .filter(m => !tipo || m.tipo === tipo)
+        .filter(m => !categoria || m.categoria === categoria)
+        .filter(m => {
+            if (!mes) return true;
+            const d = new Date(m.data);
+            return `${d.getMonth()+1}/${d.getFullYear()}` === mes;
+        })
+        .forEach(m => {
+            tabela.innerHTML += `
+                <tr>
+                    <td>${m.data}</td>
+                    <td>${m.tipo}</td>
+                    <td>${m.categoria || ''}</td>
+                    <td>${m.descricao}</td>
+                    <td>R$ ${m.valor}</td>
+                </tr>
+            `;
+        });
+}
+
+document.getElementById('filtroMes').onchange = atualizarTabela;
+document.getElementById('filtroTipo').onchange = atualizarTabela;
+document.getElementById('filtroCategoria').onchange = atualizarTabela;
+</script>
+
+</body>
+</html>

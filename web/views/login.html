@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Assistente Financeiro</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>Assistente Financeiro</h2>
+
+    <form method="POST" action="/login">
+        <input name="telefone" placeholder="WhatsApp (551199999999@c.us)" required>
+        <input name="senha" type="password" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+    </form>
+
+    <hr>
+
+    <h4>Criar conta</h4>
+    <form method="POST" action="/registrar">
+        <input name="telefone" placeholder="WhatsApp" required>
+        <input name="senha" type="password" placeholder="Senha" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+</div>
+
+</body>
+</html>
