@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Login | Assistente Financeiro</title>
-    <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8">
+  <title>Login | Assistente Financeiro</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
 <div class="container">
+  <div class="card" style="max-width:400px;margin:auto;margin-top:100px">
     <h2>Assistente Financeiro</h2>
+    <p style="color:#64748b">Controle seus gastos de forma simples</p>
 
     <form method="POST" action="/login">
-        <input name="telefone" placeholder="WhatsApp (551199999999@c.us)" required>
-        <input name="senha" type="password" placeholder="Senha" required>
-        <button type="submit">Entrar</button>
+      <input name="telefone" placeholder="Telefone" required>
+      <input name="senha" type="password" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
     </form>
 
-    <hr>
+    <hr style="margin:20px 0">
 
-    <h4>Criar conta</h4>
     <form method="POST" action="/registrar">
-        <input name="telefone" placeholder="WhatsApp" required>
-        <input name="senha" type="password" placeholder="Senha" required>
-        <button type="submit">Cadastrar</button>
+      <input name="telefone" placeholder="Telefone" required>
+      <input name="senha" type="password" placeholder="Senha" required>
+      <button type="submit">Criar conta</button>
     </form>
+  </div>
 </div>
 
 </body>
