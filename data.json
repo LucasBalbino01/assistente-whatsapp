@@ -43,14 +43,7 @@
       "categoria": "GASTO MENSAL",
       "valor": 650,
       "data": "17/12/2025"
-    },
-    {
-      "id": 1765993816967,
-      "usuario": "43996168590",
-      "descricao": "FACULDADE",
-      "categoria": "MENSAL",
-      "valor": 650,
-      "data": "17/12/2025"
     }
-  ]
+  ],
+  "cofrinhos": []
 }

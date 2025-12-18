@@ -3,30 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <title>Login | Assistente Financeiro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" href="/icon-512.png">
   <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #020617;
+      color: #e5e7eb;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 36px 28px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .logo {
+      width: 72px;
+      margin: 0 auto 16px;
+      display: block;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 15px;
+      opacity: 0.85;
+      margin-bottom: 28px;
+    }
+
+    label {
+      font-size: 14px;
+      display: block;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 15px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #facc15;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #facc15;
+      color: #020617;
+      margin-top: 10px;
+    }
+
+    .security {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .links {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .links a {
+      color: #facc15;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="container">
-  <div class="card" style="max-width:400px;margin:auto;margin-top:100px">
-    <h2>Assistente Financeiro</h2>
-    <p style="color:#64748b">Controle seus gastos de forma simples</p>
+  <form class="login-box" method="POST" action="/login">
+    <img src="/icon-512.png" class="logo" alt="Assistente Financeiro">
 
-    <form method="POST" action="/login">
-      <input name="telefone" placeholder="Telefone" required>
-      <input name="senha" type="password" placeholder="Senha" required>
-      <button type="submit">Entrar</button>
-    </form>
+    <h1>Entrar</h1>
+    <div class="subtitle">
+      Acesse sua conta e controle sua vida financeira
+    </div>
 
-    <hr style="margin:20px 0">
+    <label for="telefone">Telefone ou e-mail</label>
+    <input
+      id="telefone"
+      name="telefone"
+      placeholder="Digite seu telefone ou e-mail"
+      required
+    >
 
-    <form method="POST" action="/registrar">
-      <input name="telefone" placeholder="Telefone" required>
-      <input name="senha" type="password" placeholder="Senha" required>
-      <button type="submit">Criar conta</button>
-    </form>
-  </div>
-</div>
+    <label for="senha">Senha</label>
+    <input
+      id="senha"
+      name="senha"
+      type="password"
+      placeholder="Digite sua senha"
+      required
+    >
+
+    <button type="submit">
+      Entrar
+    </button>
+
+    <div class="security">
+      🔒 Seus dados são protegidos e criptografados
+    </div>
+
+    <div class="links">
+      Não tem conta?
+      <a href="/registrar">Criar conta</a>
+    </div>
+
+    <footer>
+      © 2025 Assistente Financeiro
+    </footer>
+  </form>
 
 </body>
 </html>

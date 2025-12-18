@@ -67,8 +67,13 @@
 
   <!-- COFRINHO -->
   <section id="cofrinho" class="card aba" style="display:none">
-    <h2>Cofrinho</h2>
-    <p>Em breve…</p>
+    <h2>🏦 Cofrinho</h2>
+
+    <input id="nomeMeta" placeholder="Nome da meta (ex: Viagem)">
+    <input id="valorMeta" type="number" placeholder="Valor total da meta">
+    <button onclick="criarCofrinho()">Criar meta</button>
+
+    <div id="listaCofrinhos" style="margin-top:20px"></div>
   </section>
 
   <!-- CONTAS -->
@@ -88,9 +93,11 @@ let grafico;
 
 /* NAVEGAÇÃO */
 function mostrar(id){
-  document.querySelectorAll('.aba').forEach(a=>a.style.display='none');
-  document.getElementById(id).style.display='block';
-  if(id==='graficos') graficoPizza();
+  document.querySelectorAll('.aba').forEach(a => a.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+
+  if (id === 'graficos') graficoPizza();
+  if (id === 'cofrinho') carregarCofrinhos();
 }
 
 /* FORMATAÇÃO */
@@ -104,12 +111,11 @@ function renderCategoria(cat){
   if(c.includes('casa')) return `<span class="categoria cat-casa">🏠 ${cat}</span>`;
   if(c.includes('merc')) return `<span class="categoria cat-mercado">🛒 ${cat}</span>`;
   if(c.includes('lazer')) return `<span class="categoria cat-lazer">🎮 ${cat}</span>`;
-  if(c.includes('uber')||c.includes('gas')) return `<span class="categoria cat-transporte">🚗 ${cat}</span>`;
-  if(c.includes('comida')||c.includes('aliment')) return `<span class="categoria cat-alimentacao">🍔 ${cat}</span>`;
   return `<span class="categoria cat-outros">💸 ${cat}</span>`;
 }
 
-/* CARREGAR DADOS */
+/* ================= GASTOS ================= */
+
 function carregar(){
   fetch('/api/dados/'+usuario)
   .then(r=>r.json())
@@ -134,7 +140,6 @@ function carregar(){
   });
 }
 
-/* CRUD */
 function adicionar(){
   fetch('/api/gasto/'+usuario,{
     method:'POST',
@@ -162,20 +167,76 @@ function editar(id,d,c,v){
   }).then(carregar);
 }
 
-/* GRÁFICO */
+/* ================= COFRINHO ================= */
+
+function carregarCofrinhos(){
+  fetch('/api/cofrinho/'+usuario)
+  .then(r=>r.json())
+  .then(lista=>{
+    listaCofrinhos.innerHTML='';
+    if(!lista.length){
+      listaCofrinhos.innerHTML='<p>Nenhuma meta criada.</p>';
+      return;
+    }
+
+    lista.forEach(c=>{
+      const pct=Math.min(100,Math.round((c.guardado/c.total)*100));
+      listaCofrinhos.innerHTML+=`
+        <div class="card" style="margin-bottom:12px">
+          <strong>${c.nome}</strong><br>
+          ${real(c.guardado)} / ${real(c.total)}
+          <div style="background:#e5e7eb;border-radius:10px;margin:8px 0">
+            <div style="width:${pct}%;background:#facc15;height:10px;border-radius:10px"></div>
+          </div>
+          <button onclick="addValor(${c.id})">Adicionar valor</button>
+          <button onclick="delCofrinho(${c.id})">Excluir</button>
+        </div>`;
+    });
+  });
+}
+
+function criarCofrinho(){
+  fetch('/api/cofrinho/'+usuario,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      nome:nomeMeta.value,
+      total:valorMeta.value
+    })
+  }).then(()=>{
+    nomeMeta.value='';
+    valorMeta.value='';
+    carregarCofrinhos();
+  });
+}
+
+function addValor(id){
+  const v=prompt('Valor para adicionar');
+  if(!v) return;
+  fetch('/api/cofrinho/'+id,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({valor:v})
+  }).then(carregarCofrinhos);
+}
+
+function delCofrinho(id){
+  if(!confirm('Excluir meta?')) return;
+  fetch('/api/cofrinho/'+id,{method:'DELETE'}).then(carregarCofrinhos);
+}
+
+/* ================= GRÁFICO ================= */
+
 function graficoPizza(){
   fetch('/api/dados/'+usuario)
   .then(r=>r.json())
   .then(d=>{
     const cat={};
     d.movimentos.forEach(g=>cat[g.categoria]=(cat[g.categoria]||0)+g.valor);
-    if(grafico)grafico.destroy();
+    if(grafico) grafico.destroy();
     grafico=new Chart(pizza,{
       type:'pie',
-      data:{
-        labels:Object.keys(cat),
-        datasets:[{data:Object.values(cat)}]
-      }
+      data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]}
     });
   });
 }
@@ -183,21 +244,9 @@ function graficoPizza(){
 /* MODO ESCURO */
 function toggleDark(){
   document.body.classList.toggle('dark');
-  const ativo=document.body.classList.contains('dark');
-  localStorage.setItem('modo-escuro',ativo?'1':'0');
-  document.querySelector('.toggle-dark').innerText=ativo?'☀️':'🌙';
+  localStorage.setItem('dark',document.body.classList.contains('dark'));
 }
-
-if(localStorage.getItem('modo-escuro')==='1'){
-  document.body.classList.add('dark');
-  document.querySelector('.toggle-dark').innerText='☀️';
-}
-
-/* SERVICE WORKER (PWA) */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js');
-
-}
+if(localStorage.getItem('dark')==='true') document.body.classList.add('dark');
 
 carregar();
 </script>

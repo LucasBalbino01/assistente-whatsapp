@@ -5,24 +5,29 @@
   <title>Assistente Financeiro</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- ÍCONE -->
   <link rel="icon" href="/icon-512.png">
+
+  <!-- CSS GLOBAL -->
   <link rel="stylesheet" href="/style.css">
 
   <style>
     body {
+      margin: 0;
       background: #020617;
       color: #e5e7eb;
+      font-family: 'Segoe UI', Arial, sans-serif;
     }
 
     .hero {
-      padding: 80px 20px;
+      padding: 90px 20px;
       text-align: center;
       background: radial-gradient(circle at top, #1e293b, #020617);
     }
 
     .logo {
-      width: 90px;
-      margin-bottom: 20px;
+      width: 96px;
+      margin-bottom: 24px;
     }
 
     .hero h1 {
@@ -39,15 +44,15 @@
     }
 
     .cta {
-      margin-top: 40px;
+      margin-top: 42px;
     }
 
     .cta button {
-      padding: 14px 30px;
+      padding: 14px 32px;
       border-radius: 999px;
       font-size: 16px;
       font-weight: 600;
-      margin: 6px;
+      margin: 8px;
       cursor: pointer;
       border: none;
     }
@@ -104,15 +109,24 @@
     .price span {
       display: block;
       margin-top: 10px;
-      opacity: 0.8;
+      opacity: 0.85;
     }
 
     footer {
       text-align: center;
-      padding: 20px;
+      padding: 24px;
       font-size: 14px;
       color: #64748b;
       border-top: 1px solid #1e293b;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 28px;
+      }
+      .hero p {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -124,8 +138,9 @@
 
   <h1>Controle total da sua vida financeira</h1>
   <p>
-    Um assistente financeiro moderno para registrar gastos, organizar contas,
-    criar metas e acompanhar tudo de forma simples e segura.
+    Um assistente financeiro moderno para registrar gastos,
+    organizar contas, criar metas e acompanhar tudo
+    de forma simples e segura.
   </p>
 
   <div class="cta">
@@ -141,7 +156,7 @@
 <section class="features">
   <div class="feature">
     <h3>📊 Controle de Gastos</h3>
-    <p>Organize seus gastos por categoria e visualize tudo em gráficos claros.</p>
+    <p>Registre gastos por categoria e visualize tudo em gráficos claros.</p>
   </div>
 
   <div class="feature">
