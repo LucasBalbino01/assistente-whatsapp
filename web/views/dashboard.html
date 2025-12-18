@@ -3,144 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <title>Assistente Financeiro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- PWA -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#2563eb">
-
+<link rel="icon" href="/icon-512.png">
 <link rel="stylesheet" href="/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#020617;
+  color:#e5e7eb;
+  font-family:'Segoe UI',Arial,sans-serif;
+}
+
+header{
+  padding:16px;
+  text-align:center;
+  font-size:20px;
+  font-weight:600;
+  border-bottom:1px solid #1e293b;
+}
+
+.container{
+  padding:16px;
+  padding-bottom:90px;
+}
+
+.aba{display:none;}
+
+.card{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin-bottom:10px;
+  border-radius:12px;
+  border:1px solid #334155;
+  background:#020617;
+  color:#e5e7eb;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border-radius:999px;
+  border:none;
+  background:#facc15;
+  color:#020617;
+  font-weight:600;
+  margin-top:8px;
+}
+
+.item{
+  padding:12px;
+  border-bottom:1px solid #1e293b;
+}
+
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#020617;
+  border-top:1px solid #1e293b;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+}
+
+.nav button{
+  background:none;
+  color:#e5e7eb;
+  font-size:12px;
+  padding:0;
+}
+</style>
 </head>
 
 <body>
+
 <header>💙 Assistente Financeiro</header>
 
 <div class="container">
 
-  <!-- MENU -->
+<!-- ================= GASTOS ================= -->
+<section id="gastos" class="aba" style="display:block">
   <div class="card">
-    <button onclick="mostrar('gastos')">📊 Gastos</button>
-    <button onclick="mostrar('graficos')">📈 Gráficos</button>
-    <button onclick="mostrar('agenda')">🗓️ Agenda</button>
-    <button onclick="mostrar('cofrinho')">🏦 Cofrinho</button>
-    <button onclick="mostrar('contas')">💳 Contas</button>
-  </div>
-
-  <!-- GASTOS -->
-  <section id="gastos" class="card aba">
-    <h2>Gastos</h2>
-
-    <input id="descricao" placeholder="Descrição do gasto">
+    <h3>📊 Gastos</h3>
+    <input id="descricao" placeholder="Descrição">
     <input id="valor" type="number" placeholder="Valor">
     <input id="categoria" placeholder="Categoria">
-    <button onclick="adicionar()">Adicionar</button>
+    <button onclick="addGasto()">Adicionar</button>
+  </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Categoria</th>
-          <th>Descrição</th>
-          <th>Valor</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="tabela"></tbody>
-    </table>
+  <div class="card">
+    <canvas id="graficoBarra"></canvas>
+  </div>
 
-    <h3 id="total"></h3>
-  </section>
+  <div class="card">
+    <canvas id="graficoPizza"></canvas>
+  </div>
 
-  <!-- GRÁFICOS -->
-  <section id="graficos" class="card aba" style="display:none">
-    <h2>Gráfico por categoria</h2>
-    <div class="grafico-container">
-      <canvas id="pizza"></canvas>
-    </div>
-  </section>
+  <div id="listaGastos"></div>
+</section>
 
-  <!-- AGENDA -->
-  <section id="agenda" class="card aba" style="display:none">
-    <h2>Agenda</h2>
-    <p>Em breve…</p>
-  </section>
+<!-- ================= AGENDA ================= -->
+<section id="agenda" class="aba">
+  <div class="card">
+    <h3>🗓️ Agenda</h3>
+    <input id="tituloAgenda" placeholder="Título">
+    <input id="dataAgenda" type="date">
+    <input id="horaAgenda" type="time">
+    <button onclick="addLembrete()">Salvar</button>
+  </div>
 
-  <!-- COFRINHO -->
-  <section id="cofrinho" class="card aba" style="display:none">
-    <h2>🏦 Cofrinho</h2>
+  <div id="listaAgenda"></div>
+</section>
 
-    <input id="nomeMeta" placeholder="Nome da meta (ex: Viagem)">
-    <input id="valorMeta" type="number" placeholder="Valor total da meta">
-    <button onclick="criarCofrinho()">Criar meta</button>
+<!-- ================= COFRINHO ================= -->
+<section id="cofrinho" class="aba">
+  <div class="card">
+    <h3>🏦 Cofrinho</h3>
+    <input id="nomeMeta" placeholder="Meta">
+    <input id="valorMeta" type="number" placeholder="Valor total">
+    <button onclick="addCofrinho()">Criar</button>
+  </div>
 
-    <div id="listaCofrinhos" style="margin-top:20px"></div>
-  </section>
+  <div id="listaCofrinhos"></div>
+</section>
 
-  <!-- CONTAS -->
-  <section id="contas" class="card aba" style="display:none">
-    <h2>Contas a pagar</h2>
-    <p>Em breve…</p>
-  </section>
+<!-- ================= CONTAS ================= -->
+<section id="contas" class="aba">
+  <div class="card">
+    <h3>💳 Contas a pagar</h3>
+    <input id="contaDesc" placeholder="Descrição">
+    <input id="contaValor" type="number" placeholder="Valor">
+    <input id="contaVenc" type="date">
+    <button onclick="addConta()">Adicionar</button>
+  </div>
+
+  <div id="listaContas"></div>
+</section>
 
 </div>
 
-<!-- BOTÃO MODO ESCURO -->
-<button class="toggle-dark" onclick="toggleDark()">🌙</button>
+<!-- ================= MENU ================= -->
+<div class="nav">
+  <button onclick="show('gastos')">📊<br>Gastos</button>
+  <button onclick="show('agenda')">🗓️<br>Agenda</button>
+  <button onclick="show('cofrinho')">🏦<br>Cofrinho</button>
+  <button onclick="show('contas')">💳<br>Contas</button>
+</div>
 
 <script>
 const usuario = location.pathname.split('/').pop();
-let grafico;
+let graficoBarra, graficoPizza;
 
-/* NAVEGAÇÃO */
-function mostrar(id){
-  document.querySelectorAll('.aba').forEach(a => a.style.display = 'none');
-  document.getElementById(id).style.display = 'block';
-
-  if (id === 'graficos') graficoPizza();
-  if (id === 'cofrinho') carregarCofrinhos();
+/* ====== NAVEGAÇÃO ====== */
+function show(id){
+  document.querySelectorAll('.aba').forEach(a=>a.style.display='none');
+  document.getElementById(id).style.display='block';
+  if(id==='gastos') carregarTudo();
 }
 
-/* FORMATAÇÃO */
-function real(v){
-  return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-}
-
-/* CATEGORIAS */
-function renderCategoria(cat){
-  const c = cat.toLowerCase();
-  if(c.includes('casa')) return `<span class="categoria cat-casa">🏠 ${cat}</span>`;
-  if(c.includes('merc')) return `<span class="categoria cat-mercado">🛒 ${cat}</span>`;
-  if(c.includes('lazer')) return `<span class="categoria cat-lazer">🎮 ${cat}</span>`;
-  return `<span class="categoria cat-outros">💸 ${cat}</span>`;
-}
-
-/* ================= GASTOS ================= */
-
-function carregar(){
-  fetch('/api/dados/'+usuario)
-  .then(r=>r.json())
-  .then(d=>{
-    let total=0;
-    tabela.innerHTML='';
-    d.movimentos.forEach(g=>{
-      total+=g.valor;
-      tabela.innerHTML+=`
-        <tr>
-          <td>${g.data}</td>
-          <td>${renderCategoria(g.categoria)}</td>
-          <td>${g.descricao}</td>
-          <td>${real(g.valor)}</td>
-          <td>
-            <button onclick="editar(${g.id},'${g.descricao}','${g.categoria}',${g.valor})">✏️</button>
-            <button onclick="excluir(${g.id})">🗑️</button>
-          </td>
-        </tr>`;
-    });
-    total.innerText='Total: '+real(total);
-  });
-}
-
-function adicionar(){
+/* ====== GASTOS ====== */
+function addGasto(){
   fetch('/api/gasto/'+usuario,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -149,106 +183,135 @@ function adicionar(){
       valor:valor.value,
       categoria:categoria.value
     })
-  }).then(carregar);
+  }).then(carregarTudo);
 }
 
-function excluir(id){
-  fetch('/api/gasto/'+id,{method:'DELETE'}).then(carregar);
-}
-
-function editar(id,d,c,v){
-  const nd=prompt('Descrição',d);
-  const nc=prompt('Categoria',c);
-  const nv=prompt('Valor',v);
-  fetch('/api/gasto/'+id,{
-    method:'PUT',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({descricao:nd,categoria:nc,valor:nv})
-  }).then(carregar);
-}
-
-/* ================= COFRINHO ================= */
-
-function carregarCofrinhos(){
-  fetch('/api/cofrinho/'+usuario)
-  .then(r=>r.json())
-  .then(lista=>{
-    listaCofrinhos.innerHTML='';
-    if(!lista.length){
-      listaCofrinhos.innerHTML='<p>Nenhuma meta criada.</p>';
-      return;
-    }
-
-    lista.forEach(c=>{
-      const pct=Math.min(100,Math.round((c.guardado/c.total)*100));
-      listaCofrinhos.innerHTML+=`
-        <div class="card" style="margin-bottom:12px">
-          <strong>${c.nome}</strong><br>
-          ${real(c.guardado)} / ${real(c.total)}
-          <div style="background:#e5e7eb;border-radius:10px;margin:8px 0">
-            <div style="width:${pct}%;background:#facc15;height:10px;border-radius:10px"></div>
-          </div>
-          <button onclick="addValor(${c.id})">Adicionar valor</button>
-          <button onclick="delCofrinho(${c.id})">Excluir</button>
-        </div>`;
-    });
-  });
-}
-
-function criarCofrinho(){
-  fetch('/api/cofrinho/'+usuario,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      nome:nomeMeta.value,
-      total:valorMeta.value
-    })
-  }).then(()=>{
-    nomeMeta.value='';
-    valorMeta.value='';
-    carregarCofrinhos();
-  });
-}
-
-function addValor(id){
-  const v=prompt('Valor para adicionar');
-  if(!v) return;
-  fetch('/api/cofrinho/'+id,{
-    method:'PUT',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({valor:v})
-  }).then(carregarCofrinhos);
-}
-
-function delCofrinho(id){
-  if(!confirm('Excluir meta?')) return;
-  fetch('/api/cofrinho/'+id,{method:'DELETE'}).then(carregarCofrinhos);
-}
-
-/* ================= GRÁFICO ================= */
-
-function graficoPizza(){
+function carregarTudo(){
   fetch('/api/dados/'+usuario)
   .then(r=>r.json())
   .then(d=>{
+    listaGastos.innerHTML='';
     const cat={};
-    d.movimentos.forEach(g=>cat[g.categoria]=(cat[g.categoria]||0)+g.valor);
-    if(grafico) grafico.destroy();
-    grafico=new Chart(pizza,{
-      type:'pie',
-      data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]}
+
+    d.movimentos.forEach(g=>{
+      listaGastos.innerHTML+=`
+      <div class="item">
+        ${g.descricao}<br>
+        <small>${g.categoria} • R$ ${g.valor}</small>
+      </div>`;
+      cat[g.categoria]=(cat[g.categoria]||0)+g.valor;
+    });
+
+    renderGraficos(cat);
+  });
+}
+
+/* ====== GRÁFICOS ====== */
+function renderGraficos(cat){
+  if(graficoBarra)graficoBarra.destroy();
+  if(graficoPizza)graficoPizza.destroy();
+
+  graficoBarra=new Chart(graficoBarra,{
+    type:'bar',
+    data:{
+      labels:Object.keys(cat),
+      datasets:[{
+        data:Object.values(cat),
+        backgroundColor:'#facc15',
+        borderRadius:8
+      }]
+    },
+    options:{plugins:{legend:{display:false}}}
+  });
+
+  graficoPizza=new Chart(graficoPizza,{
+    type:'pie',
+    data:{
+      labels:Object.keys(cat),
+      datasets:[{data:Object.values(cat)}]
+    }
+  });
+}
+
+/* ====== AGENDA ====== */
+function addLembrete(){
+  fetch('/api/lembrete/'+usuario,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      texto:tituloAgenda.value,
+      data:dataAgenda.value,
+      hora:horaAgenda.value
+    })
+  }).then(loadAgenda);
+}
+
+function loadAgenda(){
+  fetch('/api/lembretes/'+usuario)
+  .then(r=>r.json())
+  .then(l=>{
+    listaAgenda.innerHTML='';
+    l.forEach(x=>{
+      listaAgenda.innerHTML+=`
+      <div class="item">${x.texto}<br>
+      <small>${x.data} ${x.hora}</small></div>`;
     });
   });
 }
 
-/* MODO ESCURO */
-function toggleDark(){
-  document.body.classList.toggle('dark');
-  localStorage.setItem('dark',document.body.classList.contains('dark'));
+/* ====== COFRINHO ====== */
+function addCofrinho(){
+  fetch('/api/cofrinho/'+usuario,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({nome:nomeMeta.value,total:valorMeta.value})
+  }).then(loadCofrinhos);
 }
-if(localStorage.getItem('dark')==='true') document.body.classList.add('dark');
 
-carregar();
+function loadCofrinhos(){
+  fetch('/api/cofrinho/'+usuario)
+  .then(r=>r.json())
+  .then(c=>{
+    listaCofrinhos.innerHTML='';
+    c.forEach(x=>{
+      listaCofrinhos.innerHTML+=`
+      <div class="item">
+        ${x.nome}<br>
+        <small>R$ ${x.guardado} / ${x.total}</small>
+      </div>`;
+    });
+  });
+}
+
+/* ====== CONTAS ====== */
+function addConta(){
+  fetch('/api/conta/'+usuario,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      descricao:contaDesc.value,
+      valor:contaValor.value,
+      vencimento:contaVenc.value
+    })
+  }).then(loadContas);
+}
+
+function loadContas(){
+  fetch('/api/contas/'+usuario)
+  .then(r=>r.json())
+  .then(c=>{
+    listaContas.innerHTML='';
+    c.forEach(x=>{
+      listaContas.innerHTML+=`
+      <div class="item">
+        ${x.descricao}<br>
+        <small>${x.vencimento} • R$ ${x.valor}</small>
+      </div>`;
+    });
+  });
+}
+
+carregarTudo();
 </script>
 
 </body>
