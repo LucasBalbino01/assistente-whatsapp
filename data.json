@@ -27,24 +27,7 @@
     }
   },
   "lembretes": [],
-  "gastos": [
-    {
-      "id": 1765993625657,
-      "usuario": "43996168590",
-      "descricao": "JOGO",
-      "categoria": "Casa",
-      "valor": 500,
-      "data": "17/12/2025"
-    },
-    {
-      "id": 1765993803226,
-      "usuario": "43996168590",
-      "descricao": "FACULDADE",
-      "categoria": "GASTO MENSAL",
-      "valor": 650,
-      "data": "17/12/2025"
-    }
-  ],
+  "gastos": [],
   "cofrinhos": [],
   "contas": []
 }

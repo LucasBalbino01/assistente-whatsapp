@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="icon" href="/icon-512.png">
+<link rel="stylesheet" href="/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -15,48 +16,25 @@ body{
   color:#e5e7eb;
   font-family:'Segoe UI',Arial,sans-serif;
 }
-
 header{
   padding:18px;
   text-align:center;
   font-size:20px;
-  font-weight:700;
+  font-weight:600;
   border-bottom:1px solid #1e293b;
 }
-
 .container{
   padding:16px;
   padding-bottom:100px;
-  max-width:1100px;
-  margin:auto;
 }
-
 .aba{display:none}
-
 .card{
   background:#020617;
   border:1px solid #1e293b;
-  border-radius:20px;
-  padding:18px;
-  margin-bottom:18px;
-}
-
-.resumo{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:14px;
-}
-
-.resumo div{
-  border:1px solid #1e293b;
   border-radius:18px;
-  padding:14px;
-  text-align:center;
+  padding:18px;
+  margin-bottom:16px;
 }
-
-.resumo h3{font-size:13px;opacity:.8}
-.resumo strong{font-size:20px;color:#facc15}
-
 input{
   width:100%;
   padding:14px;
@@ -66,7 +44,6 @@ input{
   background:#020617;
   color:#e5e7eb;
 }
-
 button{
   width:100%;
   padding:14px;
@@ -75,15 +52,59 @@ button{
   background:#facc15;
   color:#020617;
   font-weight:600;
+  margin-top:8px;
 }
-
+button.danger{
+  background:#ef4444;
+  color:white;
+}
+button.edit{
+  background:#334155;
+  color:#e5e7eb;
+}
 .item{
-  padding:12px 0;
+  padding:14px;
   border-bottom:1px solid #1e293b;
 }
+.item small{
+  opacity:.7;
+  display:block;
+}
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
 
-canvas{max-width:100%}
+/* ====== TOTAIS TOPO ====== */
+.totais{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:20px;
+}
+.total-card{
+  padding:16px;
+  border-radius:16px;
+  border:1px solid #1e293b;
+}
+.total-card.gasto{
+  background:linear-gradient(135deg,#450a0a,#020617);
+}
+.total-card.cofre{
+  background:linear-gradient(135deg,#3f2f00,#020617);
+}
+.total-card span{
+  font-size:13px;
+  opacity:.8;
+}
+.total-card strong{
+  display:block;
+  font-size:22px;
+  margin-top:6px;
+}
 
+/* ====== MENU APP ====== */
 .nav{
   position:fixed;
   bottom:0;
@@ -95,12 +116,14 @@ canvas{max-width:100%}
   justify-content:space-around;
   padding:10px 0;
 }
-
 .nav button{
   background:none;
   color:#e5e7eb;
   font-size:12px;
+  padding:0;
 }
+
+canvas{max-width:100%}
 </style>
 </head>
 
@@ -110,44 +133,34 @@ canvas{max-width:100%}
 
 <div class="container">
 
-<!-- ================= RESUMO ================= -->
-<section id="resumo" class="aba" style="display:block">
-
-  <div class="resumo">
-    <div>
-      <h3>Total gasto</h3>
-      <strong id="totalGasto">R$ 0</strong>
-    </div>
-    <div>
-      <h3>Categorias</h3>
-      <strong id="totalCat">0</strong>
-    </div>
+<!-- ===== TOTAIS ===== -->
+<div class="totais">
+  <div class="total-card gasto">
+    <span>💸 Total gasto</span>
+    <strong id="totalGasto">R$ 0,00</strong>
   </div>
-
-  <div class="card">
-    <h3>📋 Últimos gastos</h3>
-    <div id="listaResumo"></div>
+  <div class="total-card cofre">
+    <span>🏦 Total no cofrinho</span>
+    <strong id="totalCofrinho">R$ 0,00</strong>
   </div>
-
-  <div class="card">
-    <h3>📈 Gráficos</h3>
-    <canvas id="pizza"></canvas>
-    <canvas id="barra" style="margin-top:20px"></canvas>
-  </div>
-
-</section>
+</div>
 
 <!-- ================= GASTOS ================= -->
-<section id="gastos" class="aba">
+<section id="gastos" class="aba" style="display:block">
   <div class="card">
     <h3>📊 Gastos</h3>
     <input id="descricao" placeholder="Descrição">
     <input id="valor" type="number" placeholder="Valor">
     <input id="categoria" placeholder="Categoria">
-    <button onclick="addGasto()">Adicionar</button>
+    <button onclick="addGasto()">Adicionar gasto</button>
   </div>
 
-  <div class="card" id="listaGastos"></div>
+  <div class="card">
+    <canvas id="graficoPizza"></canvas>
+    <canvas id="graficoBarra" style="margin-top:20px"></canvas>
+  </div>
+
+  <div id="listaGastos"></div>
 </section>
 
 <!-- ================= AGENDA ================= -->
@@ -157,20 +170,20 @@ canvas{max-width:100%}
     <input id="tituloAgenda" placeholder="Título">
     <input id="dataAgenda" type="date">
     <input id="horaAgenda" type="time">
-    <button onclick="addLembrete()">Salvar</button>
+    <button onclick="addLembrete()">Adicionar lembrete</button>
   </div>
-  <div class="card" id="listaAgenda"></div>
+  <div id="listaAgenda"></div>
 </section>
 
 <!-- ================= COFRINHO ================= -->
 <section id="cofrinho" class="aba">
   <div class="card">
     <h3>🏦 Cofrinho</h3>
-    <input id="nomeMeta" placeholder="Meta">
-    <input id="valorMeta" type="number" placeholder="Valor">
-    <button onclick="addCofrinho()">Criar</button>
+    <input id="nomeMeta" placeholder="Nome da meta">
+    <input id="valorMeta" type="number" placeholder="Valor total">
+    <button onclick="addCofrinho()">Criar meta</button>
   </div>
-  <div class="card" id="listaCofrinhos"></div>
+  <div id="listaCofrinhos"></div>
 </section>
 
 <!-- ================= CONTAS ================= -->
@@ -180,27 +193,25 @@ canvas{max-width:100%}
     <input id="contaDesc" placeholder="Descrição">
     <input id="contaValor" type="number" placeholder="Valor">
     <input id="contaVenc" type="date">
-    <button onclick="addConta()">Adicionar</button>
+    <button onclick="addConta()">Adicionar conta</button>
   </div>
-  <div class="card" id="listaContas"></div>
+  <div id="listaContas"></div>
 </section>
 
 </div>
 
-<!-- MENU -->
 <div class="nav">
-  <button onclick="mostrar('resumo')">🏠<br>Resumo</button>
-  <button onclick="mostrar('gastos')">📊<br>Gastos</button>
-  <button onclick="mostrar('agenda')">🗓️<br>Agenda</button>
-  <button onclick="mostrar('cofrinho')">🏦<br>Cofrinho</button>
-  <button onclick="mostrar('contas')">💳<br>Contas</button>
+  <button onclick="show('gastos')">📊<br>Gastos</button>
+  <button onclick="show('agenda')">🗓️<br>Agenda</button>
+  <button onclick="show('cofrinho')">🏦<br>Cofrinho</button>
+  <button onclick="show('contas')">💳<br>Contas</button>
 </div>
 
 <script>
 const usuario = location.pathname.split('/').pop();
 let pizzaChart, barraChart;
 
-function mostrar(id){
+function show(id){
   document.querySelectorAll('.aba').forEach(a=>a.style.display='none');
   document.getElementById(id).style.display='block';
 }
@@ -219,80 +230,92 @@ function addGasto(){
       valor:valor.value,
       categoria:categoria.value
     })
-  }).then(load);
+  }).then(loadGastos);
 }
 
-function load(){
+function loadGastos(){
   fetch('/api/dados/'+usuario)
   .then(r=>r.json())
   .then(d=>{
-    let total=0;
-    const cat={};
-    listaResumo.innerHTML='';
     listaGastos.innerHTML='';
+    let total=0;
+    const cat={}, datas={};
 
     d.movimentos.forEach(g=>{
       total+=g.valor;
-      cat[g.categoria]=(cat[g.categoria]||0)+g.valor;
-
-      listaResumo.innerHTML+=`
-        <div class="item">
-          ${g.descricao} • ${real(g.valor)}
-        </div>`;
 
       listaGastos.innerHTML+=`
-        <div class="item">
-          <strong>${g.descricao}</strong><br>
-          <small>${g.categoria} • ${real(g.valor)}</small>
-        </div>`;
+      <div class="item">
+        <strong>${g.descricao}</strong>
+        <small>${g.categoria} • ${real(g.valor)}</small>
+        <div class="actions">
+          <button class="edit" onclick="editGasto(${g.id},'${g.descricao}','${g.categoria}',${g.valor})">Editar</button>
+          <button class="danger" onclick="delGasto(${g.id})">Excluir</button>
+        </div>
+      </div>`;
+
+      cat[g.categoria]=(cat[g.categoria]||0)+g.valor;
+      datas[g.data]=(datas[g.data]||0)+g.valor;
     });
 
     totalGasto.innerText=real(total);
-    totalCat.innerText=Object.keys(cat).length;
-
-    if(pizzaChart) pizzaChart.destroy();
-    if(barraChart) barraChart.destroy();
-
-    pizzaChart=new Chart(pizza,{
-      type:'pie',
-      data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat)}]}
-    });
-
-    barraChart=new Chart(barra,{
-      type:'bar',
-      data:{labels:Object.keys(cat),datasets:[{data:Object.values(cat),backgroundColor:'#facc15'}]},
-      options:{plugins:{legend:{display:false}}}
-    });
+    renderPizza(cat);
+    renderBarra(datas);
   });
 }
 
-/* ================= AGENDA ================= */
-function addLembrete(){
-  fetch('/api/lembrete/'+usuario,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      texto:tituloAgenda.value,
-      data:dataAgenda.value,
-      hora:horaAgenda.value
-    })
-  }).then(loadAgenda);
+function delGasto(id){
+  fetch('/api/gasto/'+id,{method:'DELETE'}).then(loadGastos);
 }
 
-function loadAgenda(){
-  fetch('/api/lembretes/'+usuario)
-  .then(r=>r.json())
-  .then(l=>{
-    listaAgenda.innerHTML='';
-    l.forEach(x=>{
-      listaAgenda.innerHTML+=`
-        <div class="item">${x.texto}<br>
-        <small>${x.data} ${x.hora}</small></div>`;
-    });
+function editGasto(id,d,c,v){
+  const nd=prompt('Descrição',d);
+  const nc=prompt('Categoria',c);
+  const nv=prompt('Valor',v);
+  if(!nd||!nc||!nv)return;
+  fetch('/api/gasto/'+id,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({descricao:nd,categoria:nc,valor:nv})
+  }).then(loadGastos);
+}
+
+/* ================= GRÁFICOS ================= */
+function renderPizza(data){
+  if(pizzaChart)pizzaChart.destroy();
+  pizzaChart=new Chart(graficoPizza,{
+    type:'pie',
+    data:{labels:Object.keys(data),datasets:[{data:Object.values(data)}]}
+  });
+}
+function renderBarra(data){
+  if(barraChart)barraChart.destroy();
+  barraChart=new Chart(graficoBarra,{
+    type:'bar',
+    data:{labels:Object.keys(data),datasets:[{data:Object.values(data)}]}
   });
 }
 
 /* ================= COFRINHO ================= */
+function loadCofrinhos(){
+  fetch('/api/cofrinho/'+usuario)
+  .then(r=>r.json())
+  .then(c=>{
+    let total=0;
+    listaCofrinhos.innerHTML='';
+    c.forEach(x=>{
+      total+=x.guardado;
+      listaCofrinhos.innerHTML+=`
+      <div class="item">
+        <strong>${x.nome}</strong>
+        <small>${real(x.guardado)} / ${real(x.total)}</small>
+        <button class="danger" onclick="delCofrinho(${x.id})">Excluir</button>
+      </div>`;
+    });
+    totalCofrinho.innerText=real(total);
+  });
+}
+
 function addCofrinho(){
   fetch('/api/cofrinho/'+usuario,{
     method:'POST',
@@ -301,17 +324,8 @@ function addCofrinho(){
   }).then(loadCofrinhos);
 }
 
-function loadCofrinhos(){
-  fetch('/api/cofrinho/'+usuario)
-  .then(r=>r.json())
-  .then(c=>{
-    listaCofrinhos.innerHTML='';
-    c.forEach(x=>{
-      listaCofrinhos.innerHTML+=`
-        <div class="item">${x.nome}<br>
-        <small>${real(x.guardado)} / ${real(x.total)}</small></div>`;
-    });
-  });
+function delCofrinho(id){
+  fetch('/api/cofrinho/'+id,{method:'DELETE'}).then(loadCofrinhos);
 }
 
 /* ================= CONTAS ================= */
@@ -326,7 +340,6 @@ function addConta(){
     })
   }).then(loadContas);
 }
-
 function loadContas(){
   fetch('/api/contas/'+usuario)
   .then(r=>r.json())
@@ -334,14 +347,51 @@ function loadContas(){
     listaContas.innerHTML='';
     c.forEach(x=>{
       listaContas.innerHTML+=`
-        <div class="item">${x.descricao}<br>
-        <small>${x.vencimento} • ${real(x.valor)}</small></div>`;
+      <div class="item">
+        <strong>${x.descricao}</strong>
+        <small>${x.vencimento} • ${real(x.valor)}</small>
+        <button class="danger" onclick="delConta(${x.id})">Excluir</button>
+      </div>`;
     });
   });
 }
+function delConta(id){
+  fetch('/api/conta/'+id,{method:'DELETE'}).then(loadContas);
+}
 
-load();
-loadAgenda();
+/* ================= AGENDA ================= */
+function addLembrete(){
+  fetch('/api/lembrete/'+usuario,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      titulo:tituloAgenda.value,
+      data:dataAgenda.value,
+      hora:horaAgenda.value
+    })
+  }).then(loadAgenda);
+}
+function loadAgenda(){
+  fetch('/api/lembretes/'+usuario)
+  .then(r=>r.json())
+  .then(l=>{
+    listaAgenda.innerHTML='';
+    l.forEach(x=>{
+      listaAgenda.innerHTML+=`
+      <div class="item">
+        <strong>${x.titulo}</strong>
+        <small>${x.data} ${x.hora}</small>
+        <button class="danger" onclick="delLembrete(${x.id})">Excluir</button>
+      </div>`;
+    });
+  });
+}
+function delLembrete(id){
+  fetch('/api/lembrete/'+id,{method:'DELETE'}).then(loadAgenda);
+}
+
+loadGastos();
+loadCofrinhos();
 </script>
 
 </body>
