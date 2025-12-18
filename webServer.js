@@ -52,8 +52,13 @@ function salvarDados(dados) {
 
 // LOGIN
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'web/views/login.html'));
+  res.sendFile(path.join(__dirname, 'web/views/index.html'));
 });
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'web/views/login.html'));
+});
+
 
 app.post('/login', (req, res) => {
     const { telefone, senha } = req.body;

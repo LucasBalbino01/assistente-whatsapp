@@ -1,33 +1,31 @@
 const CACHE = 'assistente-financeiro-v2';
 
-self.addEventListener('install', event => {
+self.addEventListener('install', e => {
   self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE).then(cache => {
-      return cache.addAll([
+  e.waitUntil(
+    caches.open(CACHE).then(cache =>
+      cache.addAll([
         '/',
         '/style.css',
-        '/manifest.json',
         '/icon-512.png'
-      ]);
-    })
+      ])
+    )
   );
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
+self.addEventListener('activate', e => {
+  e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+        keys.map(k => k !== CACHE && caches.delete(k))
       )
     )
   );
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(res => res || fetch(e.request))
   );
 });
+

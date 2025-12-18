@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Assistente Financeiro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" href="/icon-512.png">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body {
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    .hero {
+      padding: 80px 20px;
+      text-align: center;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+    }
+
+    .logo {
+      width: 90px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: 34px;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .hero p {
+      font-size: 18px;
+      opacity: 0.9;
+      max-width: 620px;
+      margin: auto;
+    }
+
+    .cta {
+      margin-top: 40px;
+    }
+
+    .cta button {
+      padding: 14px 30px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 6px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: #facc15;
+      color: #020617;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #facc15;
+      border: 1px solid #facc15;
+    }
+
+    .features {
+      max-width: 1100px;
+      margin: auto;
+      padding: 60px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .feature {
+      background: #020617;
+      border: 1px solid #1e293b;
+      padding: 26px;
+      border-radius: 16px;
+    }
+
+    .feature h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .price {
+      text-align: center;
+      padding: 60px 20px;
+      background: #020617;
+      border-top: 1px solid #1e293b;
+    }
+
+    .price h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .price strong {
+      font-size: 42px;
+      color: #facc15;
+    }
+
+    .price span {
+      display: block;
+      margin-top: 10px;
+      opacity: 0.8;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #64748b;
+      border-top: 1px solid #1e293b;
+    }
+  </style>
+</head>
+
+<body>
+
+<section class="hero">
+  <img src="/icon-512.png" class="logo" alt="Assistente Financeiro">
+
+  <h1>Controle total da sua vida financeira</h1>
+  <p>
+    Um assistente financeiro moderno para registrar gastos, organizar contas,
+    criar metas e acompanhar tudo de forma simples e segura.
+  </p>
+
+  <div class="cta">
+    <button class="btn-primary" onclick="location.href='/registrar'">
+      Criar conta
+    </button>
+    <button class="btn-secondary" onclick="location.href='/login'">
+      Já tenho conta
+    </button>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature">
+    <h3>📊 Controle de Gastos</h3>
+    <p>Organize seus gastos por categoria e visualize tudo em gráficos claros.</p>
+  </div>
+
+  <div class="feature">
+    <h3>🗓️ Agenda Financeira</h3>
+    <p>Cadastre lembretes e nunca mais esqueça contas importantes.</p>
+  </div>
+
+  <div class="feature">
+    <h3>🏦 Cofrinho</h3>
+    <p>Crie metas financeiras e acompanhe sua evolução mês a mês.</p>
+  </div>
+
+  <div class="feature">
+    <h3>📱 Funciona como App</h3>
+    <p>Instale no celular e use como um aplicativo completo.</p>
+  </div>
+</section>
+
+<section class="price">
+  <h2>Plano Único</h2>
+  <strong>R$ 24,90</strong>
+  <span>por mês • Sem contrato • Cancele quando quiser</span>
+  <span style="margin-top:14px;font-size:14px;">
+    Pagamento será habilitado em breve
+  </span>
+</section>
+
+<footer>
+  © 2025 Assistente Financeiro • Todos os direitos reservados
+</footer>
+
+</body>
+</html>
